@@ -1,0 +1,132 @@
+<!-- Extend the base template (base.html) to inherit its structure and styling -->
+{% extends "base.html" %}
+
+<!-- Override the content block defined in base.html -->
+{% block content %}
+
+<!-- Form to add a new todo task -->
+<!-- Action points to the 'add_todo' route, method is POST to submit data -->
+<form action="{{ url_for('add_todo') }}" method="POST">
+    <!-- Form group wrapper for the input field -->
+    <div class="form-group">
+        <!-- Text input for the task description -->
+        <!-- 'name="task"' is used to retrieve this value in Flask -->
+        <!-- 'required' makes this field mandatory -->
+        <input type="text" name="task" class="form-control" placeholder="What needs to be done?" required>
+    </div>
+
+    <!-- Button container to center the submit button -->
+    <div class="btn-container">
+        <!-- Submit button to add the task -->
+        <!-- Button is 40% width for better visual balance -->
+        <button type="submit" class="btn btn-primary" style="width: 40%;">
+            ➕ Add Task
+        </button>
+    </div>
+</form>
+
+<!-- Conditional block: only display if there are todos in the list -->
+{% if todos %}
+<div style="margin-top: 30px;">
+    <!-- Section heading showing the count of todos -->
+    <!-- todos|length is a Jinja2 filter that counts items in the list -->
+    <h2 style="color: #2d3748; margin-bottom: 20px; font-weight: 600;">
+        Your Tasks ({{ todos|length }})
+    </h2>
+
+    <!-- Loop through each todo item in the todos list -->
+    {% for todo in todos %}
+
+    <!-- Card component for each todo -->
+    <!-- Add 'completed' class if the todo is marked as completed -->
+    <div class="card {% if todo.completed %}completed{% endif %}">
+
+        <!-- Display the todo task text -->
+        <!-- Add 'completed' class to strike through text if done -->
+        <div class="todo-text {% if todo.completed %}completed{% endif %}">
+            {{ todo.task }}
+        </div>
+
+        <!-- Action buttons container (complete, edit, delete) -->
+        <div class="todo-actions">
+
+            <!-- Complete/Undo button -->
+            <!-- Links to 'complete_todo' route with the todo's ID -->
+            <!-- Button color and text changes based on completion status -->
+            <a href="{{ url_for('complete_todo', todo_id=todo.id) }}"
+                class="btn btn-sm {% if todo.completed %}btn-warning{% else %}btn-success{% endif %}">
+                <!-- Show "Undo" if completed, "Complete" if not -->
+                {% if todo.completed %}↶ Undo{% else %}✓ Complete{% endif %}
+            </a>
+
+            <!-- Edit button -->
+            <!-- Links to 'edit_todo' route with the todo's ID -->
+            <a href="{{ url_for('edit_todo', todo_id=todo.id) }}" class="btn btn-sm btn-primary">
+                ✏️ Edit
+            </a>
+
+            <!-- Delete button -->
+            <!-- Links to 'delete_todo' route with the todo's ID -->
+            <!-- onclick shows a confirmation dialog before deleting -->
+            <a href="{{ url_for('delete_todo', todo_id=todo.id) }}" class="btn btn-sm btn-danger"
+                onclick="return confirm('Are you sure you want to delete this task?')">
+                🗑️ Delete
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Else block: display if todos list is empty -->
+{% else %}
+<div class="empty-state">
+    <!-- Empty state icon -->
+    <div>📋</div>
+    <!-- Empty state heading -->
+    <h3>No tasks yet!</h3>
+    <!-- Empty state message -->
+    <p>Add your first task using the form above.</p>
+</div>
+{% endif %}
+
+<!-- Statistics section showing task counts -->
+<div style="margin-top: 30px; padding: 20px; background: #f7fafc; border-radius: 10px;">
+    <!-- Stats section heading -->
+    <h4 style="color: #2d3748; margin-bottom: 15px;">📊 Quick Stats</h4>
+
+    <!-- Grid layout for stats cards (responsive: auto-fits columns) -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+
+        <!-- Total tasks stat card -->
+        <div style="text-align: center; padding: 15px; background: white; border-radius: 8px;">
+            <!-- Display total number of tasks -->
+            <div style="font-size: 24px; font-weight: bold; color: #667eea;">{{ todos|length }}</div>
+            <!-- Label for the stat -->
+            <div style="font-size: 12px; color: #718096;">Total Tasks</div>
+        </div>
+
+        <!-- Completed tasks stat card -->
+        <div style="text-align: center; padding: 15px; background: white; border-radius: 8px;">
+            <!-- Count completed tasks using Jinja2 filters -->
+            <!-- selectattr('completed') filters todos where completed is True -->
+            <!-- list converts to list, then length counts them -->
+            <div style="font-size: 24px; font-weight: bold; color: #48bb78;">{{
+                todos|selectattr('completed')|list|length }}</div>
+            <!-- Label for completed tasks -->
+            <div style="font-size: 12px; color: #718096;">Completed</div>
+        </div>
+
+        <!-- Pending tasks stat card -->
+        <div style="text-align: center; padding: 15px; background: white; border-radius: 8px;">
+            <!-- Count pending tasks using Jinja2 filters -->
+            <!-- rejectattr('completed') filters todos where completed is False -->
+            <!-- list converts to list, then length counts them -->
+            <div style="font-size: 24px; font-weight: bold; color: #ed8936;">{{
+                todos|rejectattr('completed')|list|length }}</div>
+            <!-- Label for pending tasks -->
+            <div style="font-size: 12px; color: #718096;">Pending</div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

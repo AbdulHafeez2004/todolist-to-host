@@ -1,0 +1,83 @@
+<!-- Extend the base template (base.html) to inherit its structure and styling -->
+{% extends "base.html" %}
+
+<!-- Override the title block to set a custom page title for the edit page -->
+{% block title %}Edit Task - Todo App{% endblock %}
+
+<!-- Override the content block defined in base.html -->
+{% block content %}
+
+<!-- Centered container with max width for the edit form -->
+<div style="max-width: 600px; margin: 0 auto;">
+
+    <!-- Header section for the edit page -->
+    <div style="text-align: center; margin-bottom: 30px;">
+        <!-- Page heading with emoji icon -->
+        <h2 style="color: #2d3748; font-weight: 600;">✏️ Edit Task</h2>
+        <!-- Subtitle/description text -->
+        <p style="color: #718096;">Update your task below</p>
+    </div>
+
+    <!-- Form to update the todo task -->
+    <!-- Action points to 'edit_todo' route with the current todo's ID -->
+    <!-- Method is POST to submit the updated data -->
+    <form action="{{ url_for('edit_todo', todo_id=todo.id) }}" method="POST">
+
+        <!-- Form group wrapper for the input field -->
+        <div class="form-group">
+            <!-- Label for the input field -->
+            <!-- 'for' attribute matches the input's 'id' for accessibility -->
+            <label for="task" style="display: block; margin-bottom: 8px; font-weight: 600; color: #2d3748;">
+                Task Description
+            </label>
+
+            <!-- Text input field pre-filled with the current task value -->
+            <!-- 'value="{{ todo.task }}"' displays the existing task text -->
+            <!-- 'required' makes this field mandatory -->
+            <!-- 'autofocus' automatically focuses this field when page loads -->
+            <input type="text" id="task" name="task" class="form-control" value="{{ todo.task }}" required autofocus>
+        </div>
+
+        <!-- Button container using flexbox for side-by-side layout -->
+        <div style="display: flex; gap: 10px; margin-top: 30px;">
+
+            <!-- Submit button to save the updated task -->
+            <!-- 'flex: 1' makes both buttons equal width -->
+            <button type="submit" class="btn btn-primary" style="flex: 1;">
+                💾 Update Task
+            </button>
+
+            <!-- Cancel button that redirects back to the home page -->
+            <!-- Styled as a link but looks like a button -->
+            <!-- Returns to 'index' route without saving changes -->
+            <a href="{{ url_for('index') }}" class="btn" style="flex: 1; background: #e2e8f0; color: #4a5568;">
+                ↩️ Cancel
+            </a>
+        </div>
+    </form>
+
+    <!-- Danger zone section for destructive actions (delete) -->
+    <!-- Light red background with red left border to indicate warning -->
+    <div
+        style="margin-top: 40px; padding: 20px; background: #fff5f5; border-radius: 10px; border-left: 4px solid #f56565;">
+
+        <!-- Danger zone heading with warning emoji -->
+        <h4 style="color: #c53030; margin-bottom: 10px;">⚠️ Danger Zone</h4>
+
+        <!-- Warning message explaining the permanent nature of deletion -->
+        <p style="color: #744210; margin-bottom: 15px; font-size: 14px;">
+            Once you delete a task, there is no going back. Please be certain.
+        </p>
+
+        <!-- Delete button -->
+        <!-- Links to 'delete_todo' route with the current todo's ID -->
+        <!-- onclick JavaScript shows a confirmation dialog before proceeding -->
+        <!-- 'return confirm()' prevents navigation if user clicks "Cancel" -->
+        <a href="{{ url_for('delete_todo', todo_id=todo.id) }}" class="btn btn-danger btn-sm"
+            onclick="return confirm('Are you sure you want to delete this task? This action cannot be undone.')">
+            🗑️ Delete This Task
+        </a>
+    </div>
+</div>
+
+{% endblock %}
